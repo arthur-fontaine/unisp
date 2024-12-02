@@ -31,6 +31,9 @@
 	"lint-staged": {
 		"*": "prettier --ignore-unknown --write"
 	},
+	"dependencies": {
+		"jiti": "^2.4.1"
+	},
 	"devDependencies": {
 		"@eslint/js": "^9.16.0",
 		"@release-it/conventional-changelog": "^9.0.3",
