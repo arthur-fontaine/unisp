@@ -4,6 +4,7 @@ import { createJiti } from "jiti";
 import { PythonServerGenerator } from "./generators/python-server/generator.js";
 import { httpSpec } from "./specs/http-spec.js";
 import { TypeScriptTypesGenerator } from "./generators/typescript-types/generator.js";
+import { HonoMiddlewareGenerator } from "./generators/hono-middleware/generator.js";
 
 async function runtime(source: string) {
 	const cwd = process.cwd();
@@ -14,7 +15,7 @@ async function runtime(source: string) {
 		source,
 	);
 
-	const g = new TypeScriptTypesGenerator();
+	const g = new HonoMiddlewareGenerator();
 	const result = g.generate({
 		filePath: source,
 		stackNames: [],

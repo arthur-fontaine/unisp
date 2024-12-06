@@ -84,9 +84,9 @@ export class TypeScriptTypesGenerator implements Generator<typeof httpSpec> {
 
 	private *generateService(context: GenerateContext) {
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
-		const serviceName = `${fileName}_service`;
+		const serviceName = `${fileName}Service`;
 
-		yield* writeContentAtRoot(`interface ${serviceName} {\n`, 0, true);
+		yield* writeContentAtRoot(`export interface ${serviceName} {\n`, 0, true);
 		for (const name in context.specs) {
 			const nextContext = addStack(context, name);
 			const requestTypeName = this.getRequestTypeName(nextContext);
