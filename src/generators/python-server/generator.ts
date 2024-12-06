@@ -5,6 +5,7 @@ import { Generate, GenerateContext, HttpSpec } from "./types.js";
 import { addStack } from "./utils/add-stack.js";
 import { getNativeType } from "./utils/get-native-type.js";
 import { writeContentAtRoot } from "./utils/write-content.js";
+import { formatVariableName } from "./utils/format-variable-name.js";
 
 export class PythonServerGenerator implements Generator<typeof httpSpec> {
 	generate: Generate = (context) => {
@@ -70,7 +71,9 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 	}
 
 	private getRequestTypeName(context: GenerateContext) {
-		return `${context.stackNames.join("_")}Request`;
+		return (
+			formatVariableName(`${context.stackNames.join("_")}Request`, "type") + "_"
+		);
 	}
 
 	private *generateResponseType(
@@ -93,15 +96,21 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 	}
 
 	private getResponseTypeName(context: GenerateContext) {
-		return `${context.stackNames.join("_")}Response`;
+		return (
+			formatVariableName(`${context.stackNames.join("_")}Response`, "type") +
+			"_"
+		);
 	}
 
 	private *generateService(context: GenerateContext) {
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
-		const serviceName = `${fileName}_service`;
 
 		// function signature
-		yield* writeContentAtRoot(`def create_${serviceName}(*,\n`, 0, true);
+		yield* writeContentAtRoot(
+			`def ${formatVariableName(`create_${fileName}_service`, "function")}(*,\n`,
+			0,
+			true,
+		);
 
 		// function parameters
 		for (const name in context.specs) {
@@ -118,7 +127,10 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 
 		yield { atRoot: true, content: `):\n` };
 
-		const middlewareName = `${fileName}_middleware`;
+		const middlewareName = formatVariableName(
+			`${fileName}_middleware`,
+			"class",
+		);
 		let middlewareCode = /* py */ `
       class ${middlewareName}:
         def __init__(self, app):

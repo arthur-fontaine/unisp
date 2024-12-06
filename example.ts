@@ -4,7 +4,7 @@ export const getPet = httpSpec((s) => ({
 	path: "/get-pet",
 	method: "POST",
 	request: s.object({
-		a: s.optional(s.string()),
+		alo_oui: s.optional(s.string()),
 	}),
 	response: s.int(),
 }));

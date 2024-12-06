@@ -9,11 +9,6 @@ export class OptionalPython extends ExternalTypeBinding<OptionalType> {
 	typeFromSchema = "optional" as const;
 
 	*getNativeType(type: OptionalType, context: GenerateContext) {
-		const name = context.stackNames.join("_") + "_optional";
-
-		yield* writeContentAtRoot(`type ${name} = `, 0);
-		yield* writeContent(name, 0);
-
 		let optionalInnerCode = "";
 		let root = "\n";
 
@@ -21,11 +16,11 @@ export class OptionalPython extends ExternalTypeBinding<OptionalType> {
 			if (part.atRoot) {
 				root += part.content;
 			} else {
-				optionalInnerCode += `*(${part.content})`;
+				optionalInnerCode = `*(${part.content})`;
 			}
 		}
 
-		yield* writeContentAtRoot(`${optionalInnerCode}`, 0, true);
+		yield* writeContent(optionalInnerCode, 0);
 		yield* writeContentAtRoot(root, 0, true);
 	}
 }

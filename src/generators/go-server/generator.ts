@@ -5,6 +5,7 @@ import { Generate, GenerateContext, HttpSpec } from "./types.js";
 import { addStack } from "./utils/add-stack.js";
 import { getNativeType } from "./utils/get-native-type.js";
 import { writeContentAtRoot } from "./utils/write-content.js";
+import { formatVariableName } from "./utils/format-variable-name.js";
 
 export class GoServerGenerator implements Generator<typeof httpSpec> {
 	generate: Generate = (context) => {
@@ -73,7 +74,10 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 	}
 
 	private getRequestTypeName(context: GenerateContext) {
-		return `${context.stackNames.join("_")}Request`;
+		return (
+			formatVariableName(`${context.stackNames.join("_")}Request`, "public") +
+			"_"
+		);
 	}
 
 	private *generateResponseType(
@@ -96,12 +100,15 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 	}
 
 	private getResponseTypeName(context: GenerateContext) {
-		return `${context.stackNames.join("_")}Response`;
+		return (
+			formatVariableName(`${context.stackNames.join("_")}Response`, "public") +
+			"_"
+		);
 	}
 
 	private *generateService(context: GenerateContext) {
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
-		const serviceName = `${fileName}_service`;
+		const serviceName = formatVariableName(`${fileName}Service`, "public");
 
 		yield* writeContentAtRoot(
 			`
@@ -112,7 +119,7 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 						const requestTypeName = this.getRequestTypeName(nextContext);
 						const responseTypeName = this.getResponseTypeName(nextContext);
 
-						return `${name}(req ${requestTypeName}) ${responseTypeName}`;
+						return `${formatVariableName(name, "public")}(req ${requestTypeName}) ${responseTypeName}`;
 					})
 					.join("\n")}
       }
@@ -123,7 +130,7 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 
 		yield* writeContentAtRoot(
 			`
-      func Create_${serviceName}Middleware(service ${serviceName}) func(next http.Handler) http.Handler {
+      func Create${serviceName}Middleware(service ${serviceName}) func(next http.Handler) http.Handler {
         return func(next http.Handler) http.Handler {
           return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             path := r.URL.Path
@@ -138,7 +145,7 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
                   return
                 }
 
-                res := service.${name}(req)
+                res := service.${formatVariableName(name, "public")}(req)
                 resBody, _ := json.Marshal(res)
 
                 w.Header().Set("Content-Type", "application/json")

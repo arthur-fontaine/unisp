@@ -32,6 +32,7 @@
 		"*": "prettier --ignore-unknown --write"
 	},
 	"dependencies": {
+		"change-case": "^5.4.4",
 		"dedent": "^1.5.3",
 		"jiti": "^2.4.1"
 	},

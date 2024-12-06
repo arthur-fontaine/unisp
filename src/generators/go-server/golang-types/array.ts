@@ -2,6 +2,7 @@ import { ArrayType } from "../../../schema/schema.js";
 import { ExternalTypeBinding } from "../../../types/external-type-binding.js";
 import { GenerateContext } from "../types.js";
 import { addStack } from "../utils/add-stack.js";
+import { formatVariableName } from "../utils/format-variable-name.js";
 import { getNativeType } from "../utils/get-native-type.js";
 import { writeContent, writeContentAtRoot } from "../utils/write-content.js";
 
@@ -9,7 +10,7 @@ export class ArrayPython extends ExternalTypeBinding<ArrayType> {
 	typeFromSchema = "array" as const;
 
 	*getNativeType(type: ArrayType, context: GenerateContext) {
-		const name = context.stackNames.join("_");
+		const name = formatVariableName(context.stackNames.join("_"), "private");
 
 		yield* writeContent(name, 0);
 

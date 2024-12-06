@@ -3,13 +3,14 @@ import { httpSpec } from "../../specs/http-spec.js";
 import type { Generator } from "../../types/generator.js";
 import { TypeScriptTypesGenerator } from "../typescript-types/generator.js";
 import { Generate } from "./types.js";
+import { formatVariableName } from "./utils/format-variable-name.js";
 
 export class HonoMiddlewareGenerator implements Generator<typeof httpSpec> {
 	generate: Generate = (context) => {
 		const typescriptTypes = new TypeScriptTypesGenerator().generate(context);
 
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
-		const serviceName = `${fileName}Service`;
+		const serviceName = formatVariableName(`${fileName}Service`, "type");
 
 		return dedent/* ts */ `
 		  import type { MiddlewareHandler } from "hono";
@@ -26,7 +27,7 @@ export class HonoMiddlewareGenerator implements Generator<typeof httpSpec> {
 						.map(([name, spec]) => {
 							return /* ts */ `
 							if (path === '${spec.path}' && method === '${spec.method}') {
-					      const response = await service.${name}(body)
+					      const response = await service.${formatVariableName(name, "variable")}(body)
 								return c.json(response)
 							}
 						`;

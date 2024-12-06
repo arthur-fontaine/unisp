@@ -2,6 +2,7 @@ import { httpSpec } from "../../specs/http-spec.js";
 import type { Generator } from "../../types/generator.js";
 import { Generate, GenerateContext, HttpSpec } from "./types.js";
 import { addStack } from "./utils/add-stack.js";
+import { formatVariableName } from "./utils/format-variable-name.js";
 import { getNativeType } from "./utils/get-native-type.js";
 import { writeContentAtRoot } from "./utils/write-content.js";
 
@@ -56,7 +57,9 @@ export class TypeScriptTypesGenerator implements Generator<typeof httpSpec> {
 	}
 
 	private getRequestTypeName(context: GenerateContext) {
-		return `${context.stackNames.join("_")}Request`;
+		return (
+			formatVariableName(`${context.stackNames.join("_")}Request`, "type") + "_"
+		);
 	}
 
 	private *generateResponseType(
@@ -79,12 +82,15 @@ export class TypeScriptTypesGenerator implements Generator<typeof httpSpec> {
 	}
 
 	private getResponseTypeName(context: GenerateContext) {
-		return `${context.stackNames.join("_")}Response`;
+		return (
+			formatVariableName(`${context.stackNames.join("_")}Response`, "type") +
+			"_"
+		);
 	}
 
 	private *generateService(context: GenerateContext) {
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
-		const serviceName = `${fileName}Service`;
+		const serviceName = formatVariableName(`${fileName}Service`, "type");
 
 		yield* writeContentAtRoot(`export interface ${serviceName} {\n`, 0, true);
 		for (const name in context.specs) {
@@ -93,7 +99,7 @@ export class TypeScriptTypesGenerator implements Generator<typeof httpSpec> {
 			const responseTypeName = this.getResponseTypeName(nextContext);
 
 			yield* writeContentAtRoot(
-				`${name}(request: ${requestTypeName}): Promise<${responseTypeName}>;\n`,
+				`${formatVariableName(name, "variable")}(request: ${requestTypeName}): Promise<${responseTypeName}>;\n`,
 				1,
 				true,
 			);
