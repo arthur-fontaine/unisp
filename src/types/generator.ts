@@ -11,5 +11,6 @@ export interface GenerateContext<
 }
 
 export interface Generator<T extends BaseSpec<any, any>> {
+	outputPath: string;
 	generate(context: GenerateContext<T>): string;
 }

@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { createJiti } from "jiti";
@@ -7,8 +8,25 @@ import { TypeScriptTypesGenerator } from "./generators/typescript-types/generato
 import { HonoMiddlewareGenerator } from "./generators/hono-middleware/generator.js";
 import { TypeScriptClientGenerator } from "./generators/typescript-client/generator.js";
 import { GoServerGenerator } from "./generators/go-server/generator.js";
+import { Generator } from "./types/generator.js";
+import { BaseSpec } from "./specs/base-spec.js";
 
-async function runtime(source: string) {
+type GeneratorConstructor = new () => Generator<BaseSpec<any, any>>;
+
+interface RuntimeOptions {
+	outputPath: string;
+}
+
+async function runtime(
+	source: string,
+	generators: GeneratorConstructor[],
+	options?: RuntimeOptions,
+) {
+	const optionsWithDefaults = {
+		outputPath: "output",
+		...options,
+	};
+
 	const cwd = process.cwd();
 	const absoluteSource = path.resolve(cwd, source);
 	const jiti = createJiti(absoluteSource);
@@ -17,14 +35,31 @@ async function runtime(source: string) {
 		source,
 	);
 
-	const g = new GoServerGenerator();
-	const result = g.generate({
-		filePath: source,
-		stackNames: [],
-		specs,
-	});
+	generators.forEach((Generator) => {
+		const generator = new Generator();
+		const result = generator.generate({
+			filePath: source,
+			stackNames: [],
+			specs,
+		});
 
-	console.log(result);
+		const outputPath = path.resolve(
+			cwd,
+			optionsWithDefaults.outputPath,
+			generator.outputPath,
+		);
+		fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+		fs.writeFileSync(
+			path.resolve(cwd, optionsWithDefaults.outputPath, generator.outputPath),
+			result,
+		);
+	});
 }
 
-void runtime("./example.ts");
+void runtime("./example.ts", [
+	PythonServerGenerator,
+	TypeScriptTypesGenerator,
+	TypeScriptClientGenerator,
+	HonoMiddlewareGenerator,
+	GoServerGenerator,
+]);

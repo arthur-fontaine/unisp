@@ -5,6 +5,8 @@ import { TypeScriptTypesGenerator } from "../typescript-types/generator.js";
 import { Generate, GenerateContext, HttpSpec } from "./types.js";
 
 export class TypeScriptClientGenerator implements Generator<typeof httpSpec> {
+	outputPath = "typescript-client/index.ts";
+
 	generate: Generate = (context) => {
 		const typescriptTypes = new TypeScriptTypesGenerator().generate(context);
 

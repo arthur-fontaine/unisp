@@ -16,7 +16,7 @@ export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 		yield* writeContent(name, 0);
 
 		for (const [key, value] of Object.entries(type.properties)) {
-			let code = `  ${formatVariableName(key, "variable")}: `;
+			let code = `  ${formatVariableName(key, "jsonKey")}: `;
 			let root = "\n";
 			const nextContext = addStack(context, key);
 

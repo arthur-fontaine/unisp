@@ -6,6 +6,8 @@ import { Generate } from "./types.js";
 import { formatVariableName } from "./utils/format-variable-name.js";
 
 export class HonoMiddlewareGenerator implements Generator<typeof httpSpec> {
+	outputPath = "hono-middleware/index.ts";
+
 	generate: Generate = (context) => {
 		const typescriptTypes = new TypeScriptTypesGenerator().generate(context);
 

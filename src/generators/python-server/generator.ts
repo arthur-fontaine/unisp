@@ -8,6 +8,8 @@ import { writeContentAtRoot } from "./utils/write-content.js";
 import { formatVariableName } from "./utils/format-variable-name.js";
 
 export class PythonServerGenerator implements Generator<typeof httpSpec> {
+	outputPath = "python-server/main.py";
+
 	generate: Generate = (context) => {
 		let root = "";
 		let code = "";
@@ -119,7 +121,7 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 			const responseTypeName = this.getResponseTypeName(nextContext);
 
 			yield* writeContentAtRoot(
-				`${name}: Callable[[${requestTypeName}], Awaitable[${responseTypeName}]],\n`,
+				`${formatVariableName(name, "function")}: Callable[[${requestTypeName}], Awaitable[${responseTypeName}]],\n`,
 				1,
 				true,
 			);
@@ -155,7 +157,7 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
     \n            `;
 		for (const [name, spec] of Object.entries(context.specs)) {
 			middlewareCode += `if path == '${spec.path}':
-              await _send_response(await ${name}(await _get_body()))
+              await _send_response(await ${formatVariableName(name, "function")}(await _get_body()))
               return
             el`;
 		}

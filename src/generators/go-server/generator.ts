@@ -8,6 +8,8 @@ import { writeContentAtRoot } from "./utils/write-content.js";
 import { formatVariableName } from "./utils/format-variable-name.js";
 
 export class GoServerGenerator implements Generator<typeof httpSpec> {
+	outputPath = "go-server/main.go";
+
 	generate: Generate = (context) => {
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
 

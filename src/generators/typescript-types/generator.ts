@@ -7,6 +7,8 @@ import { getNativeType } from "./utils/get-native-type.js";
 import { writeContentAtRoot } from "./utils/write-content.js";
 
 export class TypeScriptTypesGenerator implements Generator<typeof httpSpec> {
+	outputPath = "typescript-types/types.ts";
+
 	generate: Generate = (context) => {
 		let root = "";
 		let code = "";
