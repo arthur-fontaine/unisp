@@ -1,12 +1,11 @@
-import dedent from "dedent";
-
 function* _writeContent(
 	content: string,
 	atRoot: boolean,
 	indent: number,
 	newLineAtEnd: boolean,
 ) {
-	content = dedent(content)
+	content = content
+		.trim()
 		.split("\n")
 		.map((line) => "  ".repeat(indent) + line)
 		.join("\n");

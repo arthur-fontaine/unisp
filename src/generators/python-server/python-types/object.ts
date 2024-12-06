@@ -29,7 +29,7 @@ export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 			code += "\n";
 
 			yield* writeContentAtRoot(code, 1, true);
-			yield* writeContentAtRoot(root, 0);
+			yield* writeContentAtRoot(root, 0, true);
 		}
 	}
 }

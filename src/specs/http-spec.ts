@@ -13,7 +13,7 @@ interface HttpSpec
 		{
 			path: Path;
 			method: Method;
-			request: SchemaType[];
+			request: SchemaType;
 			response: SchemaType;
 		},
 		typeof httpSpecSymbol

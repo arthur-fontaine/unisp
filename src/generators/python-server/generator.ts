@@ -1,3 +1,4 @@
+import dedent from "dedent";
 import { httpSpec } from "../../specs/http-spec.js";
 import type { Generator } from "../../types/generator.js";
 import { Generate, GenerateContext, HttpSpec } from "./types.js";
@@ -31,7 +32,8 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 
 	private *generateImports() {
 		yield* writeContentAtRoot(
-			`
+			dedent`
+      from __future__ import annotations
       from typing import Tuple, TypedDict, Callable, Awaitable
       import json
     `,
@@ -55,23 +57,14 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 		context: GenerateContext,
 		request: HttpSpec["request"],
 	) {
-		let requestTypeCode = `type ${this.getRequestTypeName(context)} = Tuple[\n`;
-		for (let i = 0; i < request.length; i++) {
-			const type = request[i];
-			requestTypeCode += "  ";
-			for (const part of getNativeType(
-				type,
-				addStack(context, "request", i.toString()),
-			)) {
-				if (part.atRoot) {
-					yield part;
-				} else {
-					requestTypeCode += part.content;
-				}
+		let requestTypeCode = `type ${this.getRequestTypeName(context)} = `;
+		for (const part of getNativeType(request, addStack(context, "request"))) {
+			if (part.atRoot) {
+				yield part;
+			} else {
+				requestTypeCode += part.content;
 			}
-			requestTypeCode += ",\n";
 		}
-		requestTypeCode += `]\n\n`;
 
 		yield* writeContentAtRoot(requestTypeCode, 0, true);
 	}
@@ -96,8 +89,6 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 			}
 		}
 
-		responseTypeCode += "\n\n";
-
 		yield* writeContentAtRoot(responseTypeCode, 0, true);
 	}
 
@@ -119,7 +110,7 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 			const responseTypeName = this.getResponseTypeName(nextContext);
 
 			yield* writeContentAtRoot(
-				`${name}: Callable[[*${requestTypeName}], Awaitable[${responseTypeName}]],\n`,
+				`${name}: Callable[[${requestTypeName}], Awaitable[${responseTypeName}]],\n`,
 				1,
 				true,
 			);
@@ -161,7 +152,7 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 
             await self.app(scope, receive, send)\n`;
 
-		yield* writeContentAtRoot(middlewareCode, 1, true);
+		yield* writeContentAtRoot(dedent(middlewareCode), 1, true);
 		yield* writeContentAtRoot(`return ${middlewareName}`, 1);
 	}
 }
