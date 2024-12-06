@@ -1,7 +1,9 @@
 import { httpSpec } from "../../specs/http-spec.js";
 import type { Generator } from "../../types/generator.js";
 import { Generate, GenerateContext, HttpSpec } from "./types.js";
+import { addStack } from "./utils/add-stack.js";
 import { getNativeType } from "./utils/get-native-type.js";
+import { writeContentAtRoot } from "./utils/write-content.js";
 
 export class PythonServerGenerator implements Generator<typeof httpSpec> {
 	generate: Generate = (context) => {
@@ -28,23 +30,19 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 	};
 
 	private *generateImports() {
-		yield {
-			atRoot: true,
-			content: "from typing import Tuple, TypedDict, Callable, Awaitable\n",
-		};
-		yield { atRoot: true, content: "import json\n" };
-		yield { atRoot: true, content: "\n" };
+		yield* writeContentAtRoot(
+			`
+      from typing import Tuple, TypedDict, Callable, Awaitable
+      import json
+    `,
+			0,
+			true,
+		);
 	}
 
 	private *generateSpecs(context: GenerateContext) {
 		for (const [name, spec] of Object.entries(context.specs)) {
-			yield* this.generateSpec(
-				{
-					...context,
-					stackNames: [...context.stackNames, name],
-				},
-				spec,
-			);
+			yield* this.generateSpec(addStack(context, name), spec);
 		}
 	}
 
@@ -57,27 +55,25 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 		context: GenerateContext,
 		request: HttpSpec["request"],
 	) {
-		let code = "";
-
-		code += `type ${this.getRequestTypeName(context)} = Tuple[\n`;
+		let requestTypeCode = `type ${this.getRequestTypeName(context)} = Tuple[\n`;
 		for (let i = 0; i < request.length; i++) {
 			const type = request[i];
-			code += "  ";
-			for (const part of getNativeType(type, {
-				...context,
-				stackNames: [...context.stackNames, "request", i.toString()],
-			})) {
+			requestTypeCode += "  ";
+			for (const part of getNativeType(
+				type,
+				addStack(context, "request", i.toString()),
+			)) {
 				if (part.atRoot) {
 					yield part;
 				} else {
-					code += part.content;
+					requestTypeCode += part.content;
 				}
 			}
-			code += ",\n";
+			requestTypeCode += ",\n";
 		}
-		code += `]\n\n`;
+		requestTypeCode += `]\n\n`;
 
-		yield { atRoot: true, content: code };
+		yield* writeContentAtRoot(requestTypeCode, 0, true);
 	}
 
 	private getRequestTypeName(context: GenerateContext) {
@@ -88,24 +84,21 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 		context: GenerateContext,
 		response: HttpSpec["response"],
 	) {
-		let code = "";
+		let responseTypeCode = "";
 
-		code += `type ${this.getResponseTypeName(context)} = `;
+		responseTypeCode += `type ${this.getResponseTypeName(context)} = `;
 
-		for (const part of getNativeType(response, {
-			...context,
-			stackNames: [...context.stackNames, "response"],
-		})) {
+		for (const part of getNativeType(response, addStack(context, "response"))) {
 			if (part.atRoot) {
 				yield part;
 			} else {
-				code += part.content;
+				responseTypeCode += part.content;
 			}
 		}
 
-		code += "\n\n";
+		responseTypeCode += "\n\n";
 
-		yield { atRoot: true, content: code };
+		yield* writeContentAtRoot(responseTypeCode, 0, true);
 	}
 
 	private getResponseTypeName(context: GenerateContext) {
@@ -116,82 +109,59 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
 		const serviceName = `${fileName}_service`;
 
-		yield { atRoot: true, content: `def create_${serviceName}(*,\n` };
+		// function signature
+		yield* writeContentAtRoot(`def create_${serviceName}(*,\n`, 0, true);
 
-		for (const [name, spec] of Object.entries(context.specs)) {
-			yield {
-				atRoot: true,
-				content: `  ${name}: Callable[[*${this.getRequestTypeName({
-					...context,
-					stackNames: [...context.stackNames, name],
-				})}], Awaitable[${this.getResponseTypeName({
-					...context,
-					stackNames: [...context.stackNames, name],
-				})}]],\n`,
-			};
+		// function parameters
+		for (const name in context.specs) {
+			const nextContext = addStack(context, name);
+			const requestTypeName = this.getRequestTypeName(nextContext);
+			const responseTypeName = this.getResponseTypeName(nextContext);
+
+			yield* writeContentAtRoot(
+				`${name}: Callable[[*${requestTypeName}], Awaitable[${responseTypeName}]],\n`,
+				1,
+				true,
+			);
 		}
 
 		yield { atRoot: true, content: `):\n` };
 
 		const middlewareName = `${fileName}_middleware`;
-		yield { atRoot: true, content: `  class ${middlewareName}:\n` };
-		yield { atRoot: true, content: `    def __init__(self, app):\n` };
-		yield { atRoot: true, content: `      self.app = app\n` };
-		yield { atRoot: true, content: `\n` };
-		yield {
-			atRoot: true,
-			content: `    async def __call__(self, scope, receive, send):\n`,
-		};
-		yield { atRoot: true, content: `      if scope['type'] == 'http':\n` };
-		yield { atRoot: true, content: `        path = scope['path']\n` };
-		yield { atRoot: true, content: `        async def _get_body():\n` };
-		yield { atRoot: true, content: `          body = b''\n` };
-		yield { atRoot: true, content: `          while True:\n` };
-		yield { atRoot: true, content: `            message = await receive()\n` };
-		yield {
-			atRoot: true,
-			content: `            if message['type'] == 'http.request':\n`,
-		};
-		yield {
-			atRoot: true,
-			content: `              body += message.get('body', b'')\n`,
-		};
-		yield {
-			atRoot: true,
-			content: `              if not message.get('more_body', False):\n`,
-		};
-		yield { atRoot: true, content: `                return body\n` };
-		yield {
-			atRoot: true,
-			content: "        async def _send_response(body):\n",
-		};
-		yield {
-			atRoot: true,
-			content:
-				'          await send({ "type": "http.response.start", "status": 200, "headers": [(b"content-type", b"application/json")] })\n',
-		};
-		yield {
-			atRoot: true,
-			content:
-				'          await send({ "type": "http.response.body", "body": str.encode(json.dumps(body)), "more_body": False })\n',
-		};
-		yield { atRoot: true, content: "        " };
+		let middlewareCode = /* py */ `
+      class ${middlewareName}:
+        def __init__(self, app):
+          self.app = app
+
+        async def __call__(self, scope, receive, send):
+          if scope['type'] == 'http':
+            path = scope['path']
+
+            async def _get_body():
+              body = b''
+              while True:
+                message = await receive()
+                if message['type'] == 'http.request':
+                  body += message.get('body', b'')
+                  if not message.get('more_body', False):
+                    return body
+
+            async def _send_response(body):
+              await send({ "type": "http.response.start", "status": 200, "headers": [(b"content-type", b"application/json")] })
+              await send({ "type": "http.response.body", "body": str.encode(json.dumps(body)), "more_body": False })
+    \n            `;
 		for (const [name, spec] of Object.entries(context.specs)) {
-			yield { atRoot: true, content: `if path == '${spec.path}':\n` };
-			yield {
-				atRoot: true,
-				content: `          await _send_response(await ${name}(await _get_body()))\n`,
-			};
-			yield { atRoot: true, content: `          return\n` };
-			yield { atRoot: true, content: "        el" };
+			middlewareCode += `if path == '${spec.path}':
+              await _send_response(await ${name}(await _get_body()))
+              return
+            el`;
 		}
-		yield { atRoot: true, content: "se:\n" };
-		yield { atRoot: true, content: "          pass\n" };
-		yield {
-			atRoot: true,
-			content: "      await self.app(scope, receive, send)",
-		};
-		yield { atRoot: true, content: `\n` };
-		yield { atRoot: true, content: `  return ${middlewareName}\n\n` };
+		middlewareCode += `se:
+              pass
+
+            await self.app(scope, receive, send)\n`;
+
+		yield* writeContentAtRoot(middlewareCode, 1, true);
+		yield* writeContentAtRoot(`return ${middlewareName}`, 1);
 	}
 }

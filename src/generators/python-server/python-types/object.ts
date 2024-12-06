@@ -2,6 +2,7 @@ import { ObjectType } from "../../../schema/schema.js";
 import { ExternalTypeBinding } from "../../../types/external-type-binding.js";
 import { GenerateContext } from "../types.js";
 import { getNativeType } from "../utils/get-native-type.js";
+import { writeContent, writeContentAtRoot } from "../utils/write-content.js";
 
 export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 	typeFromSchema = "object" as const;
@@ -9,8 +10,8 @@ export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 	*getNativeType(type: ObjectType, context: GenerateContext) {
 		const name = context.stackNames.join("_");
 
-		yield { atRoot: true, content: `class ${name}(TypedDict):\n` };
-		yield { atRoot: false, content: name };
+		yield* writeContentAtRoot(`class ${name}(TypedDict):\n`, 0, true);
+		yield* writeContent(name, 0);
 
 		for (const [key, value] of Object.entries(type.properties)) {
 			let code = `  ${key}: `;
@@ -27,8 +28,8 @@ export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 			}
 			code += "\n";
 
-			yield { atRoot: true, content: code };
-			yield { atRoot: true, content: root };
+			yield* writeContentAtRoot(code, 1, true);
+			yield* writeContentAtRoot(root, 0);
 		}
 	}
 }

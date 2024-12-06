@@ -32,6 +32,7 @@
 		"*": "prettier --ignore-unknown --write"
 	},
 	"dependencies": {
+		"dedent": "^1.5.3",
 		"jiti": "^2.4.1"
 	},
 	"devDependencies": {
