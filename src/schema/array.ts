@@ -1,19 +1,19 @@
 import { SchemaType } from "../types/schema-type.js";
 
-type ArrayProperties = SchemaType[];
+type ArrayProperties = SchemaType;
 
 export class ArrayType<
 	T extends ArrayProperties = ArrayProperties,
 > extends SchemaType {
 	type = "array" as const;
 
-	constructor(public elements: T) {
+	constructor(public item: T) {
 		super();
 	}
 }
 
 interface ArraySchema {
-	<T extends ArrayProperties>(elements: T): ArrayType<T>;
+	<T extends ArrayProperties>(element: T): ArrayType<T>;
 }
 
-export const array: ArraySchema = (elements) => new ArrayType(elements);
+export const array: ArraySchema = (element) => new ArrayType(element);

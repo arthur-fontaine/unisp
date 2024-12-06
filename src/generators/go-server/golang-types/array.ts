@@ -11,21 +11,18 @@ export class ArrayPython extends ExternalTypeBinding<ArrayType> {
 	*getNativeType(type: ArrayType, context: GenerateContext) {
 		const name = context.stackNames.join("_");
 
-		yield* writeContentAtRoot(`type ${name} = list[`, 0, true);
 		yield* writeContent(name, 0);
 
-		const typeNames: string[] = [];
 		let root = "\n";
 
 		for (const part of getNativeType(type.item, addStack(context, "item"))) {
 			if (part.atRoot) {
 				root += part.content;
 			} else {
-				typeNames.push(`(${part.content})`);
+				yield* writeContentAtRoot(`type ${name} []${part.content}`, 0, false);
 			}
 		}
 
-		yield* writeContentAtRoot(`${typeNames.join(" | ")}\n\r]`, 1, true);
 		yield* writeContentAtRoot(root, 0, true);
 	}
 }

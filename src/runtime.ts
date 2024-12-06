@@ -6,6 +6,7 @@ import { httpSpec } from "./specs/http-spec.js";
 import { TypeScriptTypesGenerator } from "./generators/typescript-types/generator.js";
 import { HonoMiddlewareGenerator } from "./generators/hono-middleware/generator.js";
 import { TypeScriptClientGenerator } from "./generators/typescript-client/generator.js";
+import { GoServerGenerator } from "./generators/go-server/generator.js";
 
 async function runtime(source: string) {
 	const cwd = process.cwd();
@@ -16,7 +17,7 @@ async function runtime(source: string) {
 		source,
 	);
 
-	const g = new TypeScriptClientGenerator();
+	const g = new GoServerGenerator();
 	const result = g.generate({
 		filePath: source,
 		stackNames: [],

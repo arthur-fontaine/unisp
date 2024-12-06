@@ -12,15 +12,13 @@ export class ArrayPython extends ExternalTypeBinding<ArrayType> {
 		let root = "\n";
 
 		const innerArrayTypes: string[] = [];
-		for (const [key, value] of Object.entries(type.elements)) {
-			const nextContext = addStack(context, key);
+		const nextContext = addStack(context, "item");
 
-			for (const part of getNativeType(value, nextContext)) {
-				if (part.atRoot) {
-					root += part.content;
-				} else {
-					innerArrayTypes.push(`(${part.content})`);
-				}
+		for (const part of getNativeType(type.item, nextContext)) {
+			if (part.atRoot) {
+				root += part.content;
+			} else {
+				innerArrayTypes.push(`(${part.content})`);
 			}
 		}
 
