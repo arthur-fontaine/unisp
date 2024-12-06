@@ -1,4 +1,11 @@
 import { httpSpec } from "./src/index.js";
+import { PythonServerGenerator } from "./src/generators/python-server/generator.js";
+import { TypeScriptTypesGenerator } from "./src/generators/typescript-types/generator.js";
+import { HonoMiddlewareGenerator } from "./src/generators/hono-middleware/generator.js";
+import { TypeScriptClientGenerator } from "./src/generators/typescript-client/generator.js";
+import { GoServerGenerator } from "./src/generators/go-server/generator.js";
+
+export const generators = [PythonServerGenerator];
 
 export const getPet = httpSpec((s) => ({
 	path: "/get-pet",

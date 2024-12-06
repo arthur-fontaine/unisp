@@ -32,8 +32,12 @@
 		"*": "prettier --ignore-unknown --write"
 	},
 	"dependencies": {
+		"@clack/prompts": "^0.8.2",
+		"@commander-js/extra-typings": "^12.1.0",
 		"change-case": "^5.4.4",
+		"commander": "^12.1.0",
 		"dedent": "^1.5.3",
+		"glob": "^11.0.0",
 		"jiti": "^2.4.1"
 	},
 	"devDependencies": {
