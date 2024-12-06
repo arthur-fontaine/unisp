@@ -11,7 +11,7 @@ export const createPet = httpSpec((s) => ({
 	path: "/create-pet",
 	method: "POST",
 	request: s.object({
-		name: s.string(),
+		name: s.optional(s.string()),
 	}),
 	response: s.object({
 		id: s.string(),

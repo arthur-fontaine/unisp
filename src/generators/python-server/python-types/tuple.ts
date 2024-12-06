@@ -1,4 +1,3 @@
-import dedent from "dedent";
 import { TupleType } from "../../../schema/schema.js";
 import { ExternalTypeBinding } from "../../../types/external-type-binding.js";
 import { GenerateContext } from "../types.js";

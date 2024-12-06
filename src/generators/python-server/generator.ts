@@ -34,7 +34,7 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
 		yield* writeContentAtRoot(
 			dedent`
       from __future__ import annotations
-      from typing import Tuple, TypedDict, Callable, Awaitable
+      from typing import Tuple, TypedDict, Callable, Awaitable, Optional, NotRequired
       import json
     `,
 			0,

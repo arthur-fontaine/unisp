@@ -4,3 +4,4 @@ export { IntPython } from "./int.js";
 export { FloatPython } from "./float.js";
 export { ArrayPython } from "./array.js";
 export { TuplePython } from "./tuple.js";
+export { OptionalPython } from "./optional.js";

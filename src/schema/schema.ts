@@ -4,3 +4,4 @@ export { int, type IntType } from "./int.js";
 export { float, type FloatType } from "./float.js";
 export { array, type ArrayType } from "./array.js";
 export { tuple, type TupleType } from "./tuple.js";
+export { optional, type OptionalType } from "./optional.js";
