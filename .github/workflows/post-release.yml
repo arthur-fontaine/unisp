@@ -14,8 +14,8 @@ jobs:
 
             The release is available on:
 
-            * [GitHub releases](https://github.com/arthur-fontaine/unispec/releases/tag/{release_tag})
-            * [npm package (@latest dist-tag)](https://www.npmjs.com/package/unispec/v/${{ env.npm_version }})
+            * [GitHub releases](https://github.com/arthur-fontaine/unisp/releases/tag/{release_tag})
+            * [npm package (@latest dist-tag)](https://www.npmjs.com/package/unisp/v/${{ env.npm_version }})
 
             Cheers! 📦🚀
 

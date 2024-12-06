@@ -1,10 +1,10 @@
 {
-	"name": "unispec",
+	"name": "unisp",
 	"version": "0.0.0",
 	"description": "Write specifications. Generate code in many languages.",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/arthur-fontaine/unispec"
+		"url": "https://github.com/arthur-fontaine/unisp"
 	},
 	"license": "MIT",
 	"author": {
