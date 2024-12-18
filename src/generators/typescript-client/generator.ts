@@ -2,7 +2,8 @@ import dedent from "dedent";
 import { httpSpec } from "../../specs/http-spec.js";
 import type { Generator } from "../../types/generator.js";
 import { TypeScriptTypesGenerator } from "../typescript-types/generator.js";
-import { Generate, GenerateContext, HttpSpec } from "./types.js";
+import { Generate } from "./types.js";
+import { formatVariableName } from "./utils/format-variable-name.js";
 
 export class TypeScriptClientGenerator implements Generator<typeof httpSpec> {
 	outputPath = "typescript-client/index.ts";
@@ -17,10 +18,10 @@ export class TypeScriptClientGenerator implements Generator<typeof httpSpec> {
 
 			${typescriptTypes}
 
-			export function create${fileName}Client(options: {
+			export function ${formatVariableName(`create_${fileName}_Client`, "variable")}(options: {
 			  url: string,
 				options?: RequestInit
-			}): ${fileName}Service {
+			}): ${formatVariableName(`${fileName}Service`, "type")} {
 			  return {
 					${Object.entries(context.specs)
 						.map(([name, spec]) => {

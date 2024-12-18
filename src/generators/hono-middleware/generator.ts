@@ -21,7 +21,7 @@ export class HonoMiddlewareGenerator implements Generator<typeof httpSpec> {
 
 			export function create${serviceName}(service: ${serviceName}) {
 			  const middleware: MiddlewareHandler = async (c, next) => {
-					const path = c.req.routePath
+					const path = c.req.path
 					const method = c.req.method
 					const body = await c.req.json()
 
