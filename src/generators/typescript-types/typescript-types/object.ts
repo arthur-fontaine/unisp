@@ -19,6 +19,7 @@ export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 			}
 			yield* writeContent(":", 0);
 			yield* getNativeType(value, nextContext);
+			yield* writeContent(";", 0, true);
 		}
 		yield* writeContent("", 0, true);
 		yield* writeContent("}", 0, true);
