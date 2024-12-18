@@ -1,8 +1,8 @@
-import { camelCase, pascalCase } from "change-case";
+import { camelCase, pascalCase, snakeCase } from "change-case";
 
 export const formatVariableName = (
 	name: string,
-	type: "public" | "private" | "jsonKey",
+	type: "public" | "private" | "jsonKey" | "package",
 ) => {
 	switch (type) {
 		case "public":
@@ -11,5 +11,7 @@ export const formatVariableName = (
 			return camelCase(name);
 		case "private":
 			return camelCase(name);
+		case "package":
+			return snakeCase(name);
 	}
 };

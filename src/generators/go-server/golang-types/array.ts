@@ -10,7 +10,7 @@ export class ArrayPython extends ExternalTypeBinding<ArrayType> {
 	typeFromSchema = "array" as const;
 
 	*getNativeType(type: ArrayType, context: GenerateContext) {
-		const name = formatVariableName(context.stackNames.join("_"), "private");
+		const name = formatVariableName(context.stackNames.join("_"), "public");
 
 		yield* writeContent(name, 0);
 

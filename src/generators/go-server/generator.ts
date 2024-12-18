@@ -12,8 +12,9 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 
 	generate: Generate = (context) => {
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
+		const packageName = formatVariableName(fileName, "package");
 
-		let root = `package ${fileName}\n\n`;
+		let root = `package ${packageName}\n\n`;
 		let code = "";
 
 		const generators = [
@@ -63,22 +64,17 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 		context: GenerateContext,
 		request: HttpSpec["request"],
 	) {
-		let requestTypeCode = `type ${this.getRequestTypeName(context)} `;
 		for (const part of getNativeType(request, addStack(context, "request"))) {
 			if (part.atRoot) {
 				yield part;
-			} else {
-				requestTypeCode += part.content;
 			}
 		}
-
-		yield* writeContentAtRoot(requestTypeCode, 0, true);
 	}
 
 	private getRequestTypeName(context: GenerateContext) {
-		return (
-			formatVariableName(`${context.stackNames.join("_")}Request`, "public") +
-			"_"
+		return formatVariableName(
+			`${context.stackNames.join("_")}Request`,
+			"public",
 		);
 	}
 
@@ -86,25 +82,17 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 		context: GenerateContext,
 		response: HttpSpec["response"],
 	) {
-		let responseTypeCode = "";
-
-		responseTypeCode += `type ${this.getResponseTypeName(context)} `;
-
 		for (const part of getNativeType(response, addStack(context, "response"))) {
 			if (part.atRoot) {
 				yield part;
-			} else {
-				responseTypeCode += part.content;
 			}
 		}
-
-		yield* writeContentAtRoot(responseTypeCode, 0, true);
 	}
 
 	private getResponseTypeName(context: GenerateContext) {
-		return (
-			formatVariableName(`${context.stackNames.join("_")}Response`, "public") +
-			"_"
+		return formatVariableName(
+			`${context.stackNames.join("_")}Response`,
+			"public",
 		);
 	}
 

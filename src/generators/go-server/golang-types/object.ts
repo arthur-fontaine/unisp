@@ -10,7 +10,7 @@ export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 	typeFromSchema = "object" as const;
 
 	*getNativeType(type: ObjectType, context: GenerateContext) {
-		const name = formatVariableName(context.stackNames.join("_"), "private");
+		const name = formatVariableName(context.stackNames.join("_"), "public");
 
 		yield* writeContentAtRoot(`type ${name} struct {\n`, 0, true);
 		yield* writeContent(name, 0);
