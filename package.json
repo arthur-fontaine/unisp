@@ -1,7 +1,7 @@
 {
 	"name": "unisp",
 	"version": "0.0.0",
-	"description": "Write specifications. Generate code in many languages.",
+	"description": "Write one spec file for multiple languages.",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/arthur-fontaine/unisp"
