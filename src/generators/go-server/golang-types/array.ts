@@ -20,7 +20,7 @@ export class ArrayPython extends ExternalTypeBinding<ArrayType> {
 			if (part.atRoot) {
 				root += part.content;
 			} else {
-				yield* writeContentAtRoot(`type ${name} []${part.content}`, 0, false);
+				yield* writeContentAtRoot(`type ${name} []${part.content}`, 0, true);
 			}
 		}
 

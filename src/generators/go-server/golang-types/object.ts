@@ -15,9 +15,11 @@ export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 		yield* writeContentAtRoot(`type ${name} struct {\n`, 0, true);
 		yield* writeContent(name, 0);
 
+		let code = "";
+		let root = "\n";
+
 		for (const [key, value] of Object.entries(type.properties)) {
-			let code = `  ${formatVariableName(key, "public")} `;
-			let root = "\n";
+			code += `\t${formatVariableName(key, "public")} `;
 			const nextContext = addStack(context, key);
 
 			for (const part of getNativeType(value, nextContext)) {
@@ -28,10 +30,13 @@ export class ObjectPython extends ExternalTypeBinding<ObjectType> {
 						part.content + ` \`json:"${formatVariableName(key, "jsonKey")}"\``;
 				}
 			}
-			code += "}\n";
 
-			yield* writeContentAtRoot(code, 1, true);
-			yield* writeContentAtRoot(root, 0, true);
+			code += "\n";
 		}
+
+		code += "}\n";
+
+		yield* writeContentAtRoot(code, 1, true);
+		yield* writeContentAtRoot(root, 0, true);
 	}
 }
