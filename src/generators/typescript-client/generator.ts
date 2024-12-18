@@ -14,8 +14,6 @@ export class TypeScriptClientGenerator implements Generator<typeof httpSpec> {
 		const fileName = context.filePath.split("/").pop()!.split(".")[0];
 
 		return dedent/* ts */ `
-		  import type { MiddlewareHandler } from "hono";
-
 			${typescriptTypes}
 
 			export function ${formatVariableName(`create_${fileName}_Client`, "variable")}(options: {
