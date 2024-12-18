@@ -11,6 +11,7 @@ export default defineConfig({
 	source: {
 		entry: {
 			index: "./src/index.ts",
+			generators: "./src/generators.ts",
 			cli: "./src/cli/cli.ts",
 		},
 	},
