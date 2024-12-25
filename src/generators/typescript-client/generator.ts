@@ -28,7 +28,7 @@ export class TypeScriptClientGenerator implements Generator<typeof httpSpec> {
 							  ...options.options,
 								method: "${spec.method}",
 							  body: JSON.stringify(body)
-							}).then(res => res.json())
+							}).then(res => res.json()),
 						`;
 						})
 						.join("\n")}
