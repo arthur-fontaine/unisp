@@ -19,8 +19,7 @@ export async function runtime(source: string, options?: RuntimeOptions) {
 	};
 
 	const cwd = process.cwd();
-	const absoluteSource = path.resolve(cwd, source);
-	const jiti = createJiti(absoluteSource);
+	const jiti = createJiti(cwd);
 
 	const {
 		generators,
