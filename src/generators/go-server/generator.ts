@@ -119,7 +119,7 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 		);
 
 		yield* writeContentAtRoot(
-			`
+			/* go */ `
       func Create${serviceName}Middleware(service ${serviceName}) func(next http.Handler) http.Handler {
         return func(next http.Handler) http.Handler {
           return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -128,21 +128,21 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 
             ${Object.keys(context.specs)
 							.map((name) => {
-								return `if path == "${context.specs[name].path}" && method == "${context.specs[name].method}" {
-                req := ${this.getRequestTypeName(addStack(context, name))}{}
-                if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-                  http.Error(w, err.Error(), http.StatusBadRequest)
-                  return
-                }
+								return /* go */ `if path == "${context.params.basePath || ""}${context.specs[name].path}" && method == "${context.specs[name].method}" {
+                req:= ${this.getRequestTypeName(addStack(context, name))} { }
+					if err := json.NewDecoder(r.Body).Decode(& req); err != nil {
+						http.Error(w, err.Error(), http.StatusBadRequest)
+						return
+					}
 
-                res := service.${formatVariableName(name, "public")}(req)
-                resBody, _ := json.Marshal(res)
+					res:= service.${formatVariableName(name, "public")} (req)
+					resBody, _ := json.Marshal(res)
 
-                w.Header().Set("Content-Type", "application/json")
-                w.Write(resBody)
+					w.Header().Set("Content-Type", "application/json")
+					w.Write(resBody)
 
-                return
-              }`;
+					return
+				}`;
 							})
 							.join("\n")}
           })

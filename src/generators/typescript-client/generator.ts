@@ -24,7 +24,7 @@ export class TypeScriptClientGenerator implements Generator<typeof httpSpec> {
 					${Object.entries(context.specs)
 						.map(([name, spec]) => {
 							return /* ts */ `
-							"${name}": async (body) => await fetch(options.url + "${spec.path}", {
+							"${name}": async (body) => await fetch(options.url + "${context.params.basePath || ""}${spec.path}", {
 							  ...options.options,
 								method: "${spec.method}",
 							  body: JSON.stringify(body)

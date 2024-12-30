@@ -156,7 +156,7 @@ export class PythonServerGenerator implements Generator<typeof httpSpec> {
               await send({ "type": "http.response.body", "body": str.encode(json.dumps(body)), "more_body": False })
     \n            `;
 		for (const [name, spec] of Object.entries(context.specs)) {
-			middlewareCode += `if path == '${spec.path}':
+			middlewareCode += `if path == '${context.params.basePath || ""}${spec.path}':
               await _send_response(await ${formatVariableName(name, "function")}(await _get_body()))
               return
             el`;

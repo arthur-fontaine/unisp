@@ -28,7 +28,7 @@ export class HonoMiddlewareGenerator implements Generator<typeof httpSpec> {
 					${Object.entries(context.specs)
 						.map(([name, spec]) => {
 							return /* ts */ `
-							if (path === '${spec.path}' && method === '${spec.method}') {
+							if (path === '${context.params.basePath || ""}${spec.path}' && method === '${spec.method}') {
 					      const response = await service.${formatVariableName(name, "variable")}(body)
 								return c.json(response)
 							}

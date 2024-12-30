@@ -23,9 +23,11 @@ export async function runtime(source: string, options?: RuntimeOptions) {
 
 	const {
 		generators,
+		basePath,
 		...specs
 	}: Record<string, ReturnType<typeof httpSpec>> & {
 		generators: GeneratorConstructor[];
+		basePath: string;
 	} = await jiti.import(source);
 
 	generators.forEach((Generator) => {
@@ -34,6 +36,9 @@ export async function runtime(source: string, options?: RuntimeOptions) {
 			filePath: source,
 			stackNames: [],
 			specs,
+			params: {
+				basePath,
+			},
 		});
 
 		const outputPath = path.resolve(

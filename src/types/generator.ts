@@ -8,6 +8,9 @@ export interface GenerateContext<
 	specs: {
 		[k: string]: ReturnType<T>;
 	};
+	params: {
+		basePath?: string;
+	};
 }
 
 export interface Generator<T extends BaseSpec<any, any>> {
