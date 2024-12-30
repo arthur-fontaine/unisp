@@ -127,8 +127,10 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
             method := r.Method
 
             ${Object.keys(context.specs)
-							.map((name) => {
-								return /* go */ `if path == "${context.params.basePath || ""}${context.specs[name].path}" && method == "${context.specs[name].method}" {
+							.map(
+								(
+									name,
+								) => /* go */ `if path == "${context.params.basePath || ""}${context.specs[name].path}" && method == "${context.specs[name].method}" {
                 req:= ${this.getRequestTypeName(addStack(context, name))} { }
 					if err := json.NewDecoder(r.Body).Decode(& req); err != nil {
 						http.Error(w, err.Error(), http.StatusBadRequest)
@@ -142,9 +144,11 @@ export class GoServerGenerator implements Generator<typeof httpSpec> {
 					w.Write(resBody)
 
 					return
-				}`;
-							})
+				}`,
+							)
 							.join("\n")}
+
+						next.ServeHTTP(w, r)
           })
         }
       }`,
